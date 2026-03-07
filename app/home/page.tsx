@@ -4,6 +4,7 @@ import { RewardFilters } from "./_components/Filters/Filters";
 import { HomeView } from "./view";
 import { ProgrammingLanguageType } from "../_core/_types/ProgrammingLanguageType";
 import { RewardFilterUserTrying } from "./_components/Filters/UsersTryingFilter";
+import { RewardFilterDate } from "./_components/Filters/DateFilter"; // NEW: Import the date type
 
 export const metadata: Metadata = {
     title: "Opire",
@@ -17,6 +18,9 @@ export default async function Page ({
     const maxPrice = typeof searchParams.maxPrice === "string" ? searchParams.maxPrice : undefined;
     const programmingLanguages = typeof searchParams.programmingLanguages === "string" ? searchParams.programmingLanguages.split(",") : undefined;
     const usersTrying = typeof searchParams.usersTrying === "string" ? searchParams.usersTrying : undefined;
+    
+    // NEW: Extract the createdAt parameter from the URL for server-side rendering
+    const createdAt = typeof searchParams.createdAt === "string" ? searchParams.createdAt : undefined;
 
     const filters: RewardFilters = {
         price: {
@@ -25,14 +29,15 @@ export default async function Page ({
         },
         programmingLanguages: (programmingLanguages ?? []) as ProgrammingLanguageType[],
         usersTrying: usersTrying as RewardFilterUserTrying ?? "BOTH",
+        date: (createdAt as RewardFilterDate) ?? "ALL", // NEW: Add it to the filters object
     };
 
-    const rewards = await getRewards({
-        search,
-        filters,
-    });
+   const rewards = await getRewards({
+       search,
+       filters,
+   });
 
-    return (
+   return (
         <HomeView
             initialRewards={rewards}
             filters={filters}

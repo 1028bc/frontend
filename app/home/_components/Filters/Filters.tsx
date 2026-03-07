@@ -6,6 +6,7 @@ import { PriceFilter } from "./PriceFilter";
 import { ProgrammingLanguagesFilter } from "./ProgrammingLanguagesFilter";
 import { ProgrammingLanguageType } from "../../../_core/_types/ProgrammingLanguageType";
 import { RewardFilterUserTrying, UsersTryingFilter } from "./UsersTryingFilter";
+import { DateFilter, RewardFilterDate } from "./DateFilter"; // <-- NEW IMPORT
 
 export interface RewardFilters {
     price: {
@@ -14,6 +15,7 @@ export interface RewardFilters {
     };
     programmingLanguages: ProgrammingLanguageType[];
     usersTrying: RewardFilterUserTrying;
+    date: RewardFilterDate; // <-- NEW
 }
 
 export const DEFAULT_REWARD_FILTERS: RewardFilters = {
@@ -23,6 +25,7 @@ export const DEFAULT_REWARD_FILTERS: RewardFilters = {
     },
     programmingLanguages: [],
     usersTrying: "BOTH",
+    date: "ALL", // <-- NEW
 };
 
 const URL_KEYS = {
@@ -32,6 +35,7 @@ const URL_KEYS = {
     },
     PROGRAMMING_LANGUAGES: "programmingLanguages",
     USERS_TRYING: "usersTrying",
+    DATE: "createdAt", // <-- NEW (Matches the URL param we will use)
 };
 
 export function Filters() {
@@ -56,6 +60,11 @@ export function Filters() {
             ? (searchParams
                 .get(URL_KEYS.USERS_TRYING)! as RewardFilterUserTrying)
             : DEFAULT_REWARD_FILTERS.usersTrying;
+            
+        // NEW: Parse the date from the URL
+        const date = searchParams.get(URL_KEYS.DATE)
+            ? (searchParams.get(URL_KEYS.DATE)! as RewardFilterDate)
+            : DEFAULT_REWARD_FILTERS.date;
 
         return {
             price: {
@@ -64,6 +73,7 @@ export function Filters() {
             },
             programmingLanguages,
             usersTrying,
+            date, // <-- NEW
         };
     }
 
@@ -103,6 +113,19 @@ export function Filters() {
         );
     };
 
+    // NEW: Function to handle when the user selects a new date
+    const updateDateFilter = (date: RewardFilterDate) => {
+        setFilters((oldFilters) => ({
+            ...oldFilters,
+            date,
+        }));
+
+        populateParamToURL(
+            URL_KEYS.DATE,
+            date === "ALL" ? "" : date,
+        );
+    };
+
     return (
         <div
             className="filters"
@@ -126,6 +149,12 @@ export function Filters() {
             <UsersTryingFilter
                 value={filters.usersTrying}
                 onApply={updateUsersTryingFilter}
+            />
+            
+            {/* NEW: Render the actual UI component */}
+            <DateFilter 
+                value={filters.date} 
+                onApply={updateDateFilter} 
             />
         </div>
     );

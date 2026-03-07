@@ -26,9 +26,14 @@ export function buildEndpointWithSearchAndPagination (
         url += `&usersTrying=${filters.usersTrying}`;
     }
 
+    // NEW: Add the date filter to the API request
+    if (filters.date && filters.date !== "ALL") {
+        url += `&createdAt=${filters.date}`;
+    }
+
     if (!search) {
         return url;
     }
 
-    return `${url}&search=${search} `;
+    return `${url}&search=${search}`;
 }
