@@ -7,6 +7,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page () {
+    // Restored the real server guard!
     redirectToHomeIfNotLogged();
 
     return (
